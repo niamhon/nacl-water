@@ -1,0 +1,154 @@
+@SET PATH __MODEL__ 
+ &GLOBAL
+   PREFERRED_FFT_LIBRARY  FFTW3
+   FFTW_PLAN_TYPE  MEASURE
+   PRINT_LEVEL  SILENT
+   PROJECT_NAME NaCl-H2O
+   RUN_TYPE  MD
+ &END GLOBAL
+
+ &MOTION
+   &MD
+     ENSEMBLE  NVT
+     STEPS           1000000
+     TIMESTEP        1.0
+     TEMPERATURE     300
+     &THERMOSTAT
+       TYPE  CSVR
+       REGION  GLOBAL
+       &CSVR
+         TIMECON     200
+       &END CSVR
+     &END THERMOSTAT
+     &PRINT
+       FORCE_LAST  T
+       &ENERGY  SILENT
+         &EACH
+           MD  1
+         &END EACH
+       &END ENERGY
+     &END PRINT
+   &END MD
+  &PRINT
+    &TRAJECTORY
+      FORMAT DCD
+      &EACH
+        MD 50
+      &END EACH
+    &END TRAJECTORY
+     &RESTART  SILENT
+       ADD_LAST  NUMERIC
+       &EACH
+         MD  50
+       &END EACH
+     &END RESTART
+   &END PRINT
+ &END MOTION
+
+&MULTIPLE_FORCE_EVALS
+   FORCE_EVAL_ORDER 2 3
+   MULTIPLE_SUBSYS F
+&END
+
+&FORCE_EVAL
+   METHOD   MIXED
+   &MIXED
+      MIXING_TYPE GENMIX
+      GROUP_PARTITION 127 1
+      &GENERIC
+         MIXING_FUNCTION a+b
+         VARIABLES a b
+      &END GENERIC
+   &END MIXED
+   &SUBSYS
+     &CELL
+	ABC [angstrom] __DIMS__
+       MULTIPLE_UNIT_CELL  1 1 1
+     &END CELL
+     &COORD
+        @INCLUDE __FILE__
+     &END COORD
+     &KIND H
+       MASS     2.0000000000000000E+00
+     &END KIND
+   &END SUBSYS
+&END FORCE_EVAL
+
+
+ &FORCE_EVAL
+   METHOD  NNP
+   &NNP
+     NNP_INPUT_FILE_NAME ${PATH}/train_001/input.nn
+     SCALE_FILE_NAME     ${PATH}/train_001/scaling.data
+     &MODEL
+       WEIGHTS           ${PATH}/train_001/weights
+     &END MODEL
+     &MODEL
+       WEIGHTS           ${PATH}/train_002/weights
+     &END MODEL
+     &MODEL
+       WEIGHTS           ${PATH}/train_003/weights
+     &END MODEL          
+     &MODEL
+       WEIGHTS           ${PATH}/train_004/weights
+     &END MODEL          
+     &MODEL
+       WEIGHTS           ${PATH}/train_005/weights
+     &END MODEL          
+     &MODEL
+       WEIGHTS           ${PATH}/train_006/weights
+     &END MODEL          
+     &MODEL
+       WEIGHTS           ${PATH}/train_007/weights
+     &END MODEL          
+     &MODEL
+       WEIGHTS           ${PATH}/train_008/weights
+     &END MODEL          
+     &PRINT
+       &ENERGIES  SILENT
+         &EACH
+           MD  1
+         &END EACH
+       &END ENERGIES
+     &END PRINT
+   &END NNP
+ &END FORCE_EVAL
+
+ &FORCE_EVAL
+  METHOD Fist
+  &MM
+    &FORCEFIELD
+      IGNORE_MISSING_CRITICAL_PARAMS
+
+      &CHARGE
+        ATOM O
+        CHARGE -0.834
+      &END CHARGE
+      &CHARGE
+        ATOM H
+        CHARGE 0.417
+      &END CHARGE
+      !NaCl
+      &CHARGE
+        ATOM Na
+        CHARGE +1.000
+      &END CHARGE
+      &CHARGE
+        ATOM Cl
+        CHARGE -1.000
+      &END CHARGE
+    &END FORCEFIELD
+    &POISSON
+      &EWALD
+        EWALD_TYPE spme
+        ALPHA .35
+        GMAX 40
+        O_SPLINE 6
+      &END EWALD
+    &END POISSON
+  &END MM
+ &END FORCE_EVAL
+
+
+
+
