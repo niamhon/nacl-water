@@ -12,12 +12,6 @@ The content of this repository is licensed under the CC-BY-SA-4.0 license. See t
 ## Contents
 * `*/final_model`:
 All parameters of the C-NNP models for different electronic structure setups used
-<! --
-* `*/training-sets`:
-All training sets of the C-NNP models for the two water-nanotube systems studied
-* `validation-sets`:
-All validation sets for the error analysis of the C-NNP models (SI section S1.B.2)
--->
 * `cp2k-input`:
 Example input file for CP2K simulations using the C-NNP model including the Coulomb baseline
 
