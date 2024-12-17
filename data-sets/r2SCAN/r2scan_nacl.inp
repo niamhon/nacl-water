@@ -1,0 +1,114 @@
+ &GLOBAL
+   PREFERRED_FFT_LIBRARY  FFTW3
+   FFTW_PLAN_TYPE  MEASURE
+   PRINT_LEVEL  MEDIUM
+   PROJECT_NAME NaCl-H2O-R2SCAN
+   RUN_TYPE MD
+ &END GLOBAL
+ 
+&FORCE_EVAL
+  &DFT
+    CHARGE 0
+    BASIS_SET_FILE_NAME GTH_BASIS_SETS
+    BASIS_SET_FILE_NAME BASIS_MOLOPT
+    BASIS_SET_FILE_NAME BASIS_MOLOPT_UCL
+    POTENTIAL_FILE_NAME POTENTIAL
+!    WFN_RESTART_FILE_NAME NaCl-H2O-RESTART.wfn
+    &MGRID
+      CUTOFF 1200 # smaller than for MLP to speed up
+      NGRIDS 5
+    &END MGRID
+    &SCF
+      SCF_GUESS ATOMIC
+      MAX_SCF 50
+      EPS_SCF 5.0E-7
+      &OT
+        MINIMIZER DIIS
+        PRECONDITIONER FULL_ALL
+        !PRECONDITIONER FULL_KINETIC
+        !ENERGY_GAP 0.001
+      &END OT
+!&DIAGONALIZATION
+!  ALGORITHM STANDARD
+!&END DIAGONALIZATION
+!&MIXING
+!  METHOD BROYDEN_MIXING
+!  ALPHA   0.4
+!  BETA    0.5
+!  NBROYDEN  8
+!&END MIXING
+      &OUTER_SCF
+        MAX_SCF 20
+        EPS_SCF 5.0E-7
+      &END OUTER_SCF
+      &PRINT
+        &RESTART
+          ADD_LAST NUMERIC
+          &EACH
+            QS_SCF 0
+          &END EACH
+        &END RESTART
+      &END PRINT
+    &END SCF
+    &QS
+      # Use proper wavefunction extrapolation and not use_guess (needed for SP calculations)
+      !EXTRAPOLATION USE_GUESS
+      EPS_DEFAULT 1.0E-12
+      EPS_PGF_ORB 1.0E-14
+    &END QS
+    &XC # RSCAN
+       &XC_FUNCTIONAL 
+          &MGGA_X_R2SCAN 
+	&END
+          &MGGA_C_R2SCAN 
+	&END
+       &END XC_FUNCTIONAL 
+      &XC_GRID
+        XC_DERIV SPLINE2
+        #XC_DERIV SPLINE2_SMOOTH
+      &END XC_GRID
+    &END XC
+  &END DFT
+   &SUBSYS
+     &CELL
+       PERIODIC  XYZ
+       MULTIPLE_UNIT_CELL  1 1 1
+     &END CELL
+     &TOPOLOGY
+       COORD_FILE_FORMAT XYZ
+       COORD_FILE_NAME init.xyz
+     &END TOPOLOGY
+     &KIND H
+       BASIS_SET TZV2P-GTH-q1
+       POTENTIAL GTH-PBE-q1
+       MASS 2.0
+     &END KIND
+     &KIND O
+       BASIS_SET TZV2P-GTH-q6
+       POTENTIAL GTH-PBE-q6
+     &END KIND
+     &KIND Na
+       BASIS_SET TZV2P-GTH-q9
+       POTENTIAL GTH-PBE-q9
+     &END KIND
+     &KIND Cl
+       BASIS_SET TZV2P-GTH-q7
+       POTENTIAL GTH-PBE-q7
+     &END KIND
+   &END SUBSYS
+ &END FORCE_EVAL
+
+&MOTION
+  &MD
+    STEPS 0
+  &END MD
+  &PRINT
+    &FORCES
+      FILENAME =traj.xyz
+      &EACH
+        MD 1
+      &END EACH
+    &END FORCES
+  &END PRINT
+&END MOTION
+

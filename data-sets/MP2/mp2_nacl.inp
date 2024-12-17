@@ -1,0 +1,115 @@
+&FORCE_EVAL
+   METHOD QUICKSTEP
+   &SUBSYS
+      &TOPOLOGY
+         COORD_FILE_NAME trajectory-input.xyz
+         COORD_FILE_FORMAT XYZ
+         MULTIPLE_UNIT_CELL 1 1 1
+      &END TOPOLOGY
+      &KIND CL
+         BASIS_SET cc-TZ
+         BASIS_SET RI_AUX RI-cc-TZ
+         POTENTIAL GTH-HF-q7
+      &END KIND
+      &KIND NA
+         BASIS_SET cc-TZ
+         BASIS_SET RI_AUX RI-cc-TZ
+         POTENTIAL GTH-HF-q9
+      &END KIND
+      &KIND O
+         BASIS_SET cc-TZ
+         BASIS_SET RI_AUX RI-cc-TZ
+         POTENTIAL GTH-HF-q6
+      &END KIND
+      &KIND H
+         BASIS_SET cc-TZ
+         BASIS_SET RI_AUX RI-cc-TZ
+         POTENTIAL GTH-HF-q1
+      &END KIND
+      &CELL
+         PERIODIC XYZ
+      &END CELL
+   &END SUBSYS
+   &DFT
+      BASIS_SET_FILE_NAME /mnt/lustre/a2fs-work3/work/e89/e89/nco24/nacl-h2o/MLP-training/RPA/BASIS
+      POTENTIAL_FILE_NAME /mnt/lustre/a2fs-work3/work/e89/e89/nco24/nacl-h2o/MLP-training/RPA/POTENTIAL
+      WFN_RESTART_FILE_NAME step-1-RESTART.wfn 
+      SORT_BASIS EXP
+      &XC
+         &WF_CORRELATION
+	    MEMORY 3000
+	    GROUP_SIZE 4
+		&CANONICAL_GRADIENTS
+		FREE_HFX_BUFFER .FALSE.
+		&END CANONICAL_GRADIENTS
+            &RI
+               &RI_METRIC
+                  POTENTIAL_TYPE IDENTITY
+               &END RI_METRIC
+            &END RI
+            &INTEGRALS
+               &WFC_GPW
+                  CUTOFF 200.0
+                  REL_CUTOFF 40.0
+               &END WFC_GPW
+            &END INTEGRALS
+            &RI_MP2
+            &END RI_MP2
+         &END WF_CORRELATION
+         &HF
+            FRACTION 1.0
+            &MEMORY
+               MAX_MEMORY 1000
+            &END MEMORY
+            &INTERACTION_POTENTIAL
+               POTENTIAL_TYPE TRUNCATED
+               CUTOFF_RADIUS 4.9
+               T_C_G_DATA t_c_g.dat
+            &END INTERACTION_POTENTIAL
+            &SCREENING
+               EPS_SCHWARZ 1e-07
+            &END SCREENING
+         &END HF
+         &XC_FUNCTIONAL NONE
+         &END XC_FUNCTIONAL
+      &END XC
+      &SCF
+         SCF_GUESS RESTART
+         EPS_SCF 1e-06
+         MAX_SCF 30
+         &OUTER_SCF
+            EPS_SCF 1e-06
+            MAX_SCF 20
+         &END OUTER_SCF
+         &OT
+            MINIMIZER CG
+            PRECONDITIONER FULL_ALL
+         &END OT
+      &END SCF
+      &QS
+         EPS_DEFAULT 1e-12
+      &END QS
+      &MGRID
+         CUTOFF 1200.0
+         REL_CUTOFF 50.0
+      &END MGRID
+   &END DFT
+&END FORCE_EVAL
+&MOTION
+   &PRINT
+      &FORCES
+         FILENAME =forces-output.xyz
+         &EACH
+            MD 1
+         &END EACH
+      &END FORCES
+   &END PRINT
+   &MD
+      STEPS 0
+   &END MD
+&END MOTION
+&GLOBAL
+   PRINT_LEVEL LOW
+   RUN_TYPE MD
+   PROJECT_NAME step-1
+&END GLOBAL
