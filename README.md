@@ -15,5 +15,5 @@ All parameters of the C-NNP models for different electronic structure setups use
 * `input`:
 Example input file for CP2K simulations using the C-NNP model including the Coulomb baseline
 * `data-sets`
-Training sets for all models, including CP2K input file. BASIS also includes RI basis sets for RPA and MP2 calculations.
+Training sets for all models provided in both .xyz and .data formates. Also includes CP2K input file. BASIS also includes RI basis sets for RPA and MP2 calculations.
 
