@@ -10,8 +10,10 @@ Niamh O'Neill, Benjamin X Shi, Kara Fong, Angelos Michaelides, and Christoph Sch
 The content of this repository is licensed under the CC-BY-SA-4.0 license. See the file `LICENSE` for details.
 
 ## Contents
-* `*/final_model`:
+* `models/*/final_model`:
 All parameters of the C-NNP models for different electronic structure setups used
-* `cp2k-input`:
+* `input`:
 Example input file for CP2K simulations using the C-NNP model including the Coulomb baseline
+* `data-sets`
+Training sets for all models, including CP2K input file. BASIS also includes RI basis sets for RPA and MP2 calculations.
 
